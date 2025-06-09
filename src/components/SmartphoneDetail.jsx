@@ -135,7 +135,7 @@ export default function SmartphoneDetail() {
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-gray-600">Prezzo:</span>
                 <span className="text-2xl font-bold text-green-600">
-                  €{phone.price}
+                  {phone.price}€
                 </span>
               </div>
             </div>
