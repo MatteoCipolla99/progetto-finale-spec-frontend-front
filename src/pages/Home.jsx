@@ -335,22 +335,6 @@ export default function Home() {
                   >
                     {isInComparison ? "Rimuovi" : "Confronta"}
                   </button>
-
-                  <button
-                    onClick={() => toggleFavorite(phone)}
-                    className={`p-2 rounded text-sm font-semibold ${
-                      isFavorite
-                        ? "bg-red-100 text-red-500"
-                        : "bg-gray-100 text-gray-500"
-                    }`}
-                    aria-label={
-                      isFavorite
-                        ? "Rimuovi dai preferiti"
-                        : "Aggiungi ai preferiti"
-                    }
-                  >
-                    {isFavorite ? <FaHeart /> : <FaRegHeart />}
-                  </button>
                 </div>
               </div>
             );
