@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 export default function Compare() {
   const [phones, setPhones] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -10,23 +12,31 @@ export default function Compare() {
       try {
         const stored = localStorage.getItem("comparisonList");
         if (stored) {
-          const parsedIds = JSON.parse(stored);
+          const parsedPhones = JSON.parse(stored);
 
-          if (parsedIds.length !== 2) {
+          if (parsedPhones.length !== 2) {
             navigate("/");
             return;
           }
 
           // Recupera i dati completi usando gli ID
-          const [phone1Data, phone2Data] = await Promise.all([
+          const [phone1Response, phone2Response] = await Promise.all([
             fetch(
-              `${import.meta.env.VITE_API_URL}/smartphones/${parsedIds[0].id}`
-            ).then((res) => res.json()),
+              `${import.meta.env.VITE_API_URL}/smartphones/${
+                parsedPhones[0].id
+              }`
+            ),
             fetch(
-              `${import.meta.env.VITE_API_URL}/smartphones/${parsedIds[1].id}`
-            ).then((res) => res.json()),
+              `${import.meta.env.VITE_API_URL}/smartphones/${
+                parsedPhones[1].id
+              }`
+            ),
           ]);
 
+          const phone1Data = await phone1Response.json();
+          const phone2Data = await phone2Response.json();
+
+          // Estrai i dati degli smartphone dalla risposta API
           setPhones([phone1Data.smartphone, phone2Data.smartphone]);
         } else {
           navigate("/");
@@ -41,6 +51,7 @@ export default function Compare() {
 
     fetchComparisonData();
   }, [navigate]);
+
   const CompareImage = ({ src, alt }) => {
     const [imageError, setImageError] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
@@ -79,6 +90,27 @@ export default function Compare() {
     );
   };
 
+  // Render loading state
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // Render error state
+  if (error) {
+    return (
+      <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <strong>Errore:</strong> {error}
+        <Link to="/" className="block mt-2 text-blue-600 hover:text-blue-800">
+          ← Torna alla lista
+        </Link>
+      </div>
+    );
+  }
+
   if (phones.length !== 2) return null;
 
   const [phone1, phone2] = phones;
@@ -96,9 +128,9 @@ export default function Compare() {
     }
   };
 
-  // Nuova funzione per formattare i valori
+  // Funzione per formattare i valori
   const formatValue = (value, unit) => {
-    if (value === undefined || value === null) return "N/A";
+    if (value === undefined || value === null || value === "") return "N/A";
     return unit ? `${value} ${unit}` : value;
   };
 
@@ -130,7 +162,7 @@ export default function Compare() {
             </div>
             <div className="mt-3">
               <span className="text-2xl font-bold text-green-600">
-                {phone1.price}€
+                {formatValue(phone1.price, "€")}
               </span>
             </div>
           </div>
@@ -148,13 +180,13 @@ export default function Compare() {
             </div>
             <div className="mt-3">
               <span className="text-2xl font-bold text-green-600">
-                {phone2.price}€
+                {formatValue(phone2.price, "€")}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Specifiche principali allineate alla pagina di dettaglio */}
+        {/* Specifiche principali */}
         <div className="p-6 bg-gray-50">
           <h3 className="text-xl font-bold text-gray-800 mb-4">
             Specifiche Principali
@@ -227,20 +259,22 @@ export default function Compare() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="font-semibold text-gray-600">Fotocamera:</span>
-                <span className="text-gray-800">{phone1.camera || "N/A"}</span>
+                <span className="text-gray-800">
+                  {formatValue(phone1.camera)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="font-semibold text-gray-600">
                   Sistema operativo:
                 </span>
-                <span className="text-gray-800">{phone1.os || "N/A"}</span>
+                <span className="text-gray-800">{formatValue(phone1.os)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-semibold text-gray-600">
                   Anno di rilascio:
                 </span>
                 <span className="text-gray-800">
-                  {phone1.releaseYear || "N/A"}
+                  {formatValue(phone1.releaseYear)}
                 </span>
               </div>
             </div>
@@ -248,20 +282,22 @@ export default function Compare() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="font-semibold text-gray-600">Fotocamera:</span>
-                <span className="text-gray-800">{phone2.camera || "N/A"}</span>
+                <span className="text-gray-800">
+                  {formatValue(phone2.camera)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="font-semibold text-gray-600">
                   Sistema operativo:
                 </span>
-                <span className="text-gray-800">{phone2.os || "N/A"}</span>
+                <span className="text-gray-800">{formatValue(phone2.os)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="font-semibold text-gray-600">
                   Anno di rilascio:
                 </span>
                 <span className="text-gray-800">
-                  {phone2.releaseYear || "N/A"}
+                  {formatValue(phone2.releaseYear)}
                 </span>
               </div>
             </div>

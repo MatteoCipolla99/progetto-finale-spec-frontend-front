@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaHeart, FaRegHeart, FaBalanceScale } from "react-icons/fa";
+import { debounce } from "../utils/debounce";
 
 export default function Home() {
   const [smartphones, setSmartphones] = useState([]);
@@ -12,7 +13,16 @@ export default function Home() {
   const [comparisonList, setComparisonList] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
+  // Usa la tua funzione debounce
+  const debouncedSearch = debounce(setSearchTerm, 150);
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value); // Aggiornamento immediato dell'input visivo
+    debouncedSearch(value); // Aggiornamento filtrato con debounce
+  };
   // Load favorites from localStorage on component mount
   useEffect(() => {
     const storedFavorites = localStorage.getItem("favorites");
@@ -50,6 +60,18 @@ export default function Home() {
       setFavorites([...favorites, phone]);
     }
   };
+  // Save comparison list to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("comparisonList", JSON.stringify(comparisonList));
+  }, [comparisonList]);
+
+  // Inoltre, aggiungi questo useEffect per caricare la lista di confronto all'avvio:
+  useEffect(() => {
+    const storedComparison = localStorage.getItem("comparisonList");
+    if (storedComparison) {
+      setComparisonList(JSON.parse(storedComparison));
+    }
+  }, []);
 
   // Toggle smartphone in comparison
   const toggleCompare = (phone) => {
@@ -224,8 +246,8 @@ export default function Home() {
           type="text"
           placeholder="Cerca per titolo"
           className="border border-gray-300 p-3 w-full rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={inputValue}
+          onChange={handleSearchChange}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

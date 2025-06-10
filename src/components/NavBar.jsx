@@ -18,11 +18,6 @@ function NavBar() {
             Home
           </Link>
         </li>
-        <li>
-          <Link to="/confronta" className="hover:text-gray-300 transition">
-            Confronta
-          </Link>
-        </li>
       </ul>
     </nav>
   );

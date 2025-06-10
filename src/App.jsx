@@ -3,6 +3,7 @@ import Home from "./pages/Home";
 import SmartphoneDetail from "./components/SmartphoneDetail";
 import NavBar from "./components/NavBar";
 import Compare from "./pages/Compare";
+import PageNotFound from "./pages/PageNotFound";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/smartphones/:id" element={<SmartphoneDetail />} />
         <Route path="/compare" element={<Compare />} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </BrowserRouter>
   );
