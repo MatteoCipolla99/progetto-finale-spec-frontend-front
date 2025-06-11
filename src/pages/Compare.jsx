@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiBarChart2 } from "react-icons/fi";
 import { Footer } from "./Footer";
 
-export default function Compare({ comparisonList }) {
+export default function Compare() {
   const [phones, setPhones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,28 +12,35 @@ export default function Compare({ comparisonList }) {
   useEffect(() => {
     const fetchComparisonData = async () => {
       try {
-        if (!comparisonList || comparisonList.length !== 2) {
+        const stored = localStorage.getItem("comparisonList");
+        if (stored) {
+          const parsedPhones = JSON.parse(stored);
+
+          if (parsedPhones.length !== 2) {
+            navigate("/");
+            return;
+          }
+
+          const [phone1Response, phone2Response] = await Promise.all([
+            fetch(
+              `${import.meta.env.VITE_API_URL}/smartphones/${
+                parsedPhones[0].id
+              }`
+            ),
+            fetch(
+              `${import.meta.env.VITE_API_URL}/smartphones/${
+                parsedPhones[1].id
+              }`
+            ),
+          ]);
+
+          const phone1Data = await phone1Response.json();
+          const phone2Data = await phone2Response.json();
+
+          setPhones([phone1Data.smartphone, phone2Data.smartphone]);
+        } else {
           navigate("/");
-          return;
         }
-
-        const [phone1Response, phone2Response] = await Promise.all([
-          fetch(
-            `${import.meta.env.VITE_API_URL}/smartphones/${
-              comparisonList[0].id
-            }`
-          ),
-          fetch(
-            `${import.meta.env.VITE_API_URL}/smartphones/${
-              comparisonList[1].id
-            }`
-          ),
-        ]);
-
-        const phone1Data = await phone1Response.json();
-        const phone2Data = await phone2Response.json();
-
-        setPhones([phone1Data.smartphone, phone2Data.smartphone]);
       } catch (err) {
         setError("Errore nel caricamento del confronto");
         console.error(err);
@@ -43,7 +50,7 @@ export default function Compare({ comparisonList }) {
     };
 
     fetchComparisonData();
-  }, [comparisonList, navigate]);
+  }, [navigate]);
 
   if (loading) {
     return (
