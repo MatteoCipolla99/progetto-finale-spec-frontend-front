@@ -1,21 +1,7 @@
-// hooks/useComparison.js
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function useComparison() {
   const [comparisonList, setComparisonList] = useState([]);
-
-  // Load comparison list from localStorage on mount
-  useEffect(() => {
-    const storedComparison = localStorage.getItem("comparisonList");
-    if (storedComparison) {
-      setComparisonList(JSON.parse(storedComparison));
-    }
-  }, []);
-
-  // Save comparison list to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("comparisonList", JSON.stringify(comparisonList));
-  }, [comparisonList]);
 
   const toggleCompare = (phone) => {
     const isSelected = comparisonList.some((p) => p.id === phone.id);
@@ -29,9 +15,8 @@ export function useComparison() {
     }
   };
 
-  const isInComparison = (phoneId) => {
-    return comparisonList.some((p) => p.id === phoneId);
-  };
+  const isInComparison = (phoneId) =>
+    comparisonList.some((p) => p.id === phoneId);
 
   return {
     comparisonList,
