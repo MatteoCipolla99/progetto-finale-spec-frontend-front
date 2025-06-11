@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FiArrowLeft, FiBarChart2 } from "react-icons/fi";
+import { Footer } from "./Footer";
 
 export default function Compare() {
   const [phones, setPhones] = useState([]);
@@ -19,7 +21,6 @@ export default function Compare() {
             return;
           }
 
-          // Recupera i dati completi usando gli ID
           const [phone1Response, phone2Response] = await Promise.all([
             fetch(
               `${import.meta.env.VITE_API_URL}/smartphones/${
@@ -36,7 +37,6 @@ export default function Compare() {
           const phone1Data = await phone1Response.json();
           const phone2Data = await phone2Response.json();
 
-          // Estrai i dati degli smartphone dalla risposta API
           setPhones([phone1Data.smartphone, phone2Data.smartphone]);
         } else {
           navigate("/");
@@ -52,60 +52,25 @@ export default function Compare() {
     fetchComparisonData();
   }, [navigate]);
 
-  const CompareImage = ({ src, alt }) => {
-    const [imageError, setImageError] = useState(false);
-    const [imageLoading, setImageLoading] = useState(true);
-
-    return (
-      <div className="w-full max-w-xs mx-auto mb-4 bg-gray-100 rounded-lg overflow-hidden">
-        {imageError ? (
-          <div className="h-48 flex items-center justify-center text-gray-500">
-            <div className="text-center">
-              <div className="text-4xl mb-2">📱</div>
-              <div className="text-sm">Immagine non disponibile</div>
-            </div>
-          </div>
-        ) : (
-          <div className="relative h-48">
-            {imageLoading && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              </div>
-            )}
-            <img
-              src={src}
-              alt={alt}
-              className={`w-full h-full object-contain transition-opacity duration-300 ${
-                imageLoading ? "opacity-0" : "opacity-100"
-              }`}
-              onError={() => {
-                setImageError(true);
-                setImageLoading(false);
-              }}
-              onLoad={() => setImageLoading(false)}
-            />
-          </div>
-        )}
-      </div>
-    );
-  };
-
-  // Render loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
       </div>
     );
   }
 
-  // Render error state
   if (error) {
     return (
-      <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-        <strong>Errore:</strong> {error}
-        <Link to="/" className="block mt-2 text-blue-600 hover:text-blue-800">
-          ← Torna alla lista
+      <div className="max-w-md mx-auto mt-20 p-6 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm text-center">
+        <h3 className="text-xl font-bold text-red-100 mb-2">Errore</h3>
+        <p className="text-red-200 mb-4">{error}</p>
+        <Link
+          to="/"
+          className="inline-flex items-center px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-100 rounded-lg transition-colors"
+        >
+          <FiArrowLeft className="mr-2" />
+          Torna alla home
         </Link>
       </div>
     );
@@ -115,228 +80,170 @@ export default function Compare() {
 
   const [phone1, phone2] = phones;
 
-  const categoryLabel = (cat) => {
-    switch (cat) {
-      case "flagship":
-        return "Top di gamma";
-      case "mid-range":
-        return "Fascia media";
-      case "budget":
-        return "Economico";
-      default:
-        return cat;
-    }
-  };
-
-  // Funzione per formattare i valori
-  const formatValue = (value, unit) => {
-    if (value === undefined || value === null || value === "") return "N/A";
-    return unit ? `${value} ${unit}` : value;
-  };
+  const renderSpecRow = (label, value1, value2, unit = "") => (
+    <div className="grid grid-cols-12 gap-4 py-3 even:bg-white/5">
+      <div className="col-span-4 sm:col-span-3 text-right text-gray-700 font-medium">
+        {label}
+      </div>
+      <div className="col-span-4 sm:col-span-3 text-center font-semibold text-white">
+        {value1 || "N/A"} {unit}
+      </div>
+      <div className="col-span-4 sm:col-span-3 text-center font-semibold text-white">
+        {value2 || "N/A"} {unit}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <Link
-        to="/"
-        className="inline-flex items-center mb-6 text-blue-600 hover:text-blue-800 transition-colors"
-      >
-        ← Torna alla lista
-      </Link>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+      <div className="max-w-6xl mx-auto">
+        <Link
+          to="/"
+          className="inline-flex items-center mb-8 text-blue-400 hover:text-blue-300 transition-colors"
+        >
+          <FiArrowLeft className="mr-2" />
+          Torna alla lista
+        </Link>
 
-      <h1 className="text-3xl font-bold mb-8 text-gray-800 text-center">
-        Confronto Smartphone
-      </h1>
-
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="grid grid-cols-2 gap-8 p-6 border-b border-gray-200">
-          <div className="text-center">
-            <CompareImage src={phone1.image} alt={phone1.title} />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              {phone1.title}
-            </h2>
-            <p className="text-lg text-gray-600">{phone1.brand}</p>
-            <div className="mt-2">
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                {categoryLabel(phone1.category)}
-              </span>
-            </div>
-            <div className="mt-3">
-              <span className="text-2xl font-bold text-green-600">
-                {formatValue(phone1.price, "€")}
-              </span>
-            </div>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center p-3 rounded-full bg-gradient-to-r from-blue-600/20 to-purple-600/20 mb-4">
+            <FiBarChart2 className="text-blue-400 text-2xl" />
           </div>
-
-          <div className="text-center">
-            <CompareImage src={phone2.image} alt={phone2.title} />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              {phone2.title}
-            </h2>
-            <p className="text-lg text-gray-600">{phone2.brand}</p>
-            <div className="mt-2">
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                {categoryLabel(phone2.category)}
-              </span>
-            </div>
-            <div className="mt-3">
-              <span className="text-2xl font-bold text-green-600">
-                {formatValue(phone2.price, "€")}
-              </span>
-            </div>
-          </div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+            Confronto Smartphone
+          </h1>
+          <p className="text-gray-800 max-w-2xl mx-auto">
+            Confronta le specifiche tecniche dei due dispositivi selezionati
+          </p>
         </div>
 
-        {/* Specifiche principali */}
-        <div className="p-6 bg-gray-50">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
-            Specifiche Principali
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            {/* Schermo */}
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">Schermo</div>
-              <div className="font-semibold">
-                {formatValue(phone1.screenSize, '"')}
-              </div>
+        <div className="bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+          {/* Header with phone names */}
+          <div className="grid grid-cols-2 border-b border-white/10">
+            <div className="p-6 text-center border-r border-white/10">
+              <h2 className="text-2xl font-bold text-white mb-1">
+                {phone1.title}
+              </h2>
+              <p className="text-gray-700">{phone1.brand}</p>
             </div>
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">Schermo</div>
-              <div className="font-semibold">
-                {formatValue(phone2.screenSize, '"')}
-              </div>
+            <div className="p-6 text-center">
+              <h2 className="text-2xl font-bold text-white mb-1">
+                {phone2.title}
+              </h2>
+              <p className="text-gray-700">{phone2.brand}</p>
             </div>
+          </div>
 
-            {/* Memoria */}
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">Memoria</div>
-              <div className="font-semibold">
-                {formatValue(phone1.storage, "GB")}
+          {/* Images */}
+          <div className="grid grid-cols-2 py-8 px-6">
+            <div className="flex justify-center border-r border-white/10">
+              <div className="w-48 h-48 bg-gradient-to-br from-slate-800 to-purple-900/50 rounded-lg overflow-hidden flex items-center justify-center">
+                <img
+                  src={phone1.image}
+                  alt={phone1.title}
+                  className="w-full h-full object-contain p-4"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/300?text=No+Image";
+                  }}
+                />
               </div>
             </div>
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">Memoria</div>
-              <div className="font-semibold">
-                {formatValue(phone2.storage, "GB")}
-              </div>
-            </div>
-
-            {/* RAM */}
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">RAM</div>
-              <div className="font-semibold">
-                {formatValue(phone1.ram, "GB")}
-              </div>
-            </div>
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">RAM</div>
-              <div className="font-semibold">
-                {formatValue(phone2.ram, "GB")}
-              </div>
-            </div>
-
-            {/* Batteria */}
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">Batteria</div>
-              <div className="font-semibold">
-                {formatValue(phone1.battery, "mAh")}
-              </div>
-            </div>
-            <div className="text-center p-3 bg-white rounded shadow">
-              <div className="text-sm text-gray-600">Batteria</div>
-              <div className="font-semibold">
-                {formatValue(phone2.battery, "mAh")}
+            <div className="flex justify-center">
+              <div className="w-48 h-48 bg-gradient-to-br from-slate-800 to-purple-900/50 rounded-lg overflow-hidden flex items-center justify-center">
+                <img
+                  src={phone2.image}
+                  alt={phone2.title}
+                  className="w-full h-full object-contain p-4"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://via.placeholder.com/300?text=No+Image";
+                  }}
+                />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Dettagli aggiuntivi */}
-        <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">
-            Altre Caratteristiche
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">Fotocamera:</span>
-                <span className="text-gray-800">
-                  {formatValue(phone1.camera)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">
-                  Sistema operativo:
-                </span>
-                <span className="text-gray-800">{formatValue(phone1.os)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">
-                  Anno di rilascio:
-                </span>
-                <span className="text-gray-800">
-                  {formatValue(phone1.releaseYear)}
-                </span>
-              </div>
+          {/* Specs comparison */}
+          <div className="p-6">
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-white mb-6 pb-2 border-b border-white/10">
+                Specifiche Tecniche
+              </h3>
+
+              {renderSpecRow("Prezzo", phone1.price, phone2.price, "€")}
+              {renderSpecRow(
+                "Categoria",
+                phone1.category === "flagship"
+                  ? "Top di gamma"
+                  : phone1.category === "mid-range"
+                  ? "Fascia media"
+                  : "Economico",
+                phone2.category === "flagship"
+                  ? "Top di gamma"
+                  : phone2.category === "mid-range"
+                  ? "Fascia media"
+                  : "Economico"
+              )}
+              {renderSpecRow(
+                "Schermo",
+                phone1.screenSize,
+                phone2.screenSize,
+                '"'
+              )}
+              {renderSpecRow("RAM", phone1.ram, phone2.ram, "GB")}
+              {renderSpecRow("Memoria", phone1.storage, phone2.storage, "GB")}
+              {renderSpecRow("Batteria", phone1.battery, phone2.battery, "mAh")}
+              {renderSpecRow("Fotocamera", phone1.camera, phone2.camera)}
+              {renderSpecRow("Sistema Operativo", phone1.os, phone2.os)}
+              {renderSpecRow(
+                "Anno di Rilascio",
+                phone1.releaseYear,
+                phone2.releaseYear
+              )}
             </div>
 
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">Fotocamera:</span>
-                <span className="text-gray-800">
-                  {formatValue(phone2.camera)}
-                </span>
+            {/* Descriptions */}
+            {(phone1.description || phone2.description) && (
+              <div>
+                <h3 className="text-xl font-bold text-white mb-6 pb-2 border-b border-white/10">
+                  Descrizioni
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h4 className="font-bold text-white mb-2">
+                      {phone1.title}
+                    </h4>
+                    <p className="text-gray-800">
+                      {phone1.description || "Nessuna descrizione disponibile."}
+                    </p>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <h4 className="font-bold text-white mb-2">
+                      {phone2.title}
+                    </h4>
+                    <p className="text-gray-800">
+                      {phone2.description || "Nessuna descrizione disponibile."}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">
-                  Sistema operativo:
-                </span>
-                <span className="text-gray-800">{formatValue(phone2.os)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="font-semibold text-gray-600">
-                  Anno di rilascio:
-                </span>
-                <span className="text-gray-800">
-                  {formatValue(phone2.releaseYear)}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
 
-        {/* Descrizioni */}
-        {(phone1.description || phone2.description) && (
-          <div className="p-6 bg-gray-50 border-t border-gray-200">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">
-              Descrizione
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-4 bg-white rounded-lg shadow">
-                <h4 className="font-bold text-gray-800 mb-2">{phone1.title}</h4>
-                <p className="text-gray-700">
-                  {phone1.description || "Nessuna descrizione disponibile."}
-                </p>
-              </div>
-              <div className="p-4 bg-white rounded-lg shadow">
-                <h4 className="font-bold text-gray-800 mb-2">{phone2.title}</h4>
-                <p className="text-gray-700">
-                  {phone2.description || "Nessuna descrizione disponibile."}
-                </p>
-              </div>
-            </div>
+          {/* Footer */}
+          <div className="p-6 border-t border-white/10 text-center">
+            <Link
+              to="/"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:opacity-90 transition-opacity"
+            >
+              <FiArrowLeft className="mr-2" />
+              Torna alla lista
+            </Link>
           </div>
-        )}
-
-        {/* Pulsante per tornare alla lista */}
-        <div className="p-6 border-t border-gray-200 text-center">
-          <Link
-            to="/"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Torna alla lista smartphone
-          </Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
