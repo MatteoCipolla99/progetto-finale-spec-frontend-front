@@ -70,7 +70,7 @@ export default function SearchFilters({
           <input
             type="text"
             placeholder="Cerca smartphone..."
-            className="w-full pl-12 pr-4 py-4 bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-xl focus:outline-none text-white placeholder-slate-400 transition-all duration-300"
+            className="w-full pl-12 pr-4 py-4 bg-slate-800/80 backdrop-blur-sm border border-slate-700 rounded-xl focus:outline-none text-white placeholder-slate-300 transition-all duration-300"
             value={inputValue}
             onChange={onSearchChange}
             onFocus={() => setIsSearchFocused(true)}
