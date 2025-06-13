@@ -17,9 +17,6 @@ export default function SmartphoneCard({
 
   return (
     <div className="group relative overflow-hidden rounded-xl bg-slate-800 border border-slate-700/50 transition-all duration-300 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10">
-      {/* Background effects */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
       {/* Favorite button */}
       <button
         onClick={() => onToggleFavorite(phone)}

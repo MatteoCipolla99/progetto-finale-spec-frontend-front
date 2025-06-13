@@ -23,9 +23,6 @@ function NavBar() {
           : "bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900"
       }`}
     >
-      {/* Gradient overlay decorativo */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 opacity-50"></div>
-
       <div className="relative max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo section con animazioni */}
@@ -76,13 +73,6 @@ function NavBar() {
           </div>
         </div>
       </div>
-
-      {/* Bottom glow effect */}
-      <div
-        className={`absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent transition-opacity duration-500 ${
-          scrolled ? "opacity-100" : "opacity-0"
-        }`}
-      ></div>
     </nav>
   );
 }

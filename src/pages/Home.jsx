@@ -12,6 +12,7 @@ import { useFavorites } from "../hooks/useFavorites";
 import { useComparison } from "../hooks/useComparison";
 import { useSmartphoneFilters } from "../hooks/useSmartphoneFilters";
 import { Footer } from "../pages/Footer";
+import { Toast } from "../components/Toast";
 
 export default function Home() {
   const [smartphones, setSmartphones] = useState([]);
@@ -21,7 +22,8 @@ export default function Home() {
 
   // Custom hooks
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
-  const { comparisonList, toggleCompare, isInComparison } = useComparison();
+  const { comparisonList, toggleCompare, isInComparison, toast, hideToast } =
+    useComparison();
   const {
     inputValue,
     selectedCategory,
@@ -56,13 +58,7 @@ export default function Home() {
   if (error) return <ErrorMessage error={error} />;
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      {/* Background decorative elements */}
-      <div className="fixed inset-0 overflow-hidden opacity-10">
-        <div className="absolute top-0 left-1/4 w-72 h-72 bg-purple-600 rounded-full filter blur-3xl mix-blend-overlay"></div>
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-blue-600 rounded-full filter blur-3xl mix-blend-overlay"></div>
-      </div>
-
+    <div className="flex flex-col min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/40 to-slate-900">
       {/* Favorites sidebar */}
       <FavoritesSidebar
         showFavorites={showFavorites}
@@ -121,6 +117,12 @@ export default function Home() {
         )}
       </div>
       <Footer />
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.show}
+        onClose={hideToast}
+      />
     </div>
   );
 }

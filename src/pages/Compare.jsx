@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FiArrowLeft, FiBarChart2 } from "react-icons/fi";
 import { Footer } from "./Footer";
 
@@ -7,40 +7,43 @@ export default function Compare() {
   const [phones, setPhones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchComparisonData = async () => {
       try {
-        const stored = localStorage.getItem("comparisonList");
-        if (stored) {
-          const parsedPhones = JSON.parse(stored);
+        const comparisonPhones = location.state?.comparisonList;
 
-          if (parsedPhones.length !== 2) {
-            navigate("/");
-            return;
-          }
-
-          const [phone1Response, phone2Response] = await Promise.all([
-            fetch(
-              `${import.meta.env.VITE_API_URL}/smartphones/${
-                parsedPhones[0].id
-              }`
-            ),
-            fetch(
-              `${import.meta.env.VITE_API_URL}/smartphones/${
-                parsedPhones[1].id
-              }`
-            ),
-          ]);
-
-          const phone1Data = await phone1Response.json();
-          const phone2Data = await phone2Response.json();
-
-          setPhones([phone1Data.smartphone, phone2Data.smartphone]);
-        } else {
-          navigate("/");
+        if (!comparisonPhones || comparisonPhones.length !== 2) {
+          setError(
+            "Devi selezionare esattamente 2 smartphone per il confronto"
+          );
+          setLoading(false);
+          return;
         }
+
+        // Fetch dei dettagli completi per entrambi i telefoni
+        const [phone1Response, phone2Response] = await Promise.all([
+          fetch(
+            `${import.meta.env.VITE_API_URL}/smartphones/${
+              comparisonPhones[0].id
+            }`
+          ),
+          fetch(
+            `${import.meta.env.VITE_API_URL}/smartphones/${
+              comparisonPhones[1].id
+            }`
+          ),
+        ]);
+
+        if (!phone1Response.ok || !phone2Response.ok) {
+          throw new Error("Errore nel recupero dei dettagli");
+        }
+
+        const phone1Data = await phone1Response.json();
+        const phone2Data = await phone2Response.json();
+
+        setPhones([phone1Data.smartphone, phone2Data.smartphone]);
       } catch (err) {
         setError("Errore nel caricamento del confronto");
         console.error(err);
@@ -50,7 +53,7 @@ export default function Compare() {
     };
 
     fetchComparisonData();
-  }, [navigate]);
+  }, [location.state]);
 
   if (loading) {
     return (
@@ -76,7 +79,23 @@ export default function Compare() {
     );
   }
 
-  if (phones.length !== 2) return null;
+  if (phones.length !== 2) {
+    return (
+      <div className="max-w-md mx-auto mt-20 p-6 bg-yellow-500/10 border border-yellow-500/30 rounded-xl backdrop-blur-sm text-center">
+        <h3 className="text-xl font-bold text-yellow-100 mb-2">Attenzione</h3>
+        <p className="text-yellow-200 mb-4">
+          Devi selezionare esattamente 2 smartphone per il confronto
+        </p>
+        <Link
+          to="/"
+          className="inline-flex items-center px-4 py-2 bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-100 rounded-lg transition-colors"
+        >
+          <FiArrowLeft className="mr-2" />
+          Torna alla home
+        </Link>
+      </div>
+    );
+  }
 
   const [phone1, phone2] = phones;
 
@@ -94,9 +113,22 @@ export default function Compare() {
     </div>
   );
 
+  const getCategoryLabel = (category) => {
+    switch (category) {
+      case "flagship":
+        return "Top di gamma";
+      case "mid-range":
+        return "Fascia media";
+      case "budget":
+        return "Economico";
+      default:
+        return category;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto p-6">
         <Link
           to="/"
           className="inline-flex items-center mb-8 text-blue-400 hover:text-blue-300 transition-colors"
@@ -109,10 +141,10 @@ export default function Compare() {
           <div className="inline-flex items-center justify-center p-3 rounded-full bg-gradient-to-r from-blue-600/20 to-purple-600/20 mb-4">
             <FiBarChart2 className="text-blue-400 text-2xl" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-2">
             Confronto Smartphone
           </h1>
-          <p className="text-gray-800 max-w-2xl mx-auto">
+          <p className="text-gray-300 max-w-2xl mx-auto">
             Confronta le specifiche tecniche dei due dispositivi selezionati
           </p>
         </div>
@@ -124,13 +156,13 @@ export default function Compare() {
               <h2 className="text-2xl font-bold text-white mb-1">
                 {phone1.title}
               </h2>
-              <p className="text-gray-700">{phone1.brand}</p>
+              <p className="text-gray-400">{phone1.brand}</p>
             </div>
             <div className="p-6 text-center">
               <h2 className="text-2xl font-bold text-white mb-1">
                 {phone2.title}
               </h2>
-              <p className="text-gray-700">{phone2.brand}</p>
+              <p className="text-gray-400">{phone2.brand}</p>
             </div>
           </div>
 
@@ -143,8 +175,9 @@ export default function Compare() {
                   alt={phone1.title}
                   className="w-full h-full object-contain p-4"
                   onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/300?text=No+Image";
+                    e.target.style.display = "none";
+                    e.target.parentNode.innerHTML =
+                      '<div class="text-4xl text-gray-500">📱</div>';
                   }}
                 />
               </div>
@@ -156,8 +189,9 @@ export default function Compare() {
                   alt={phone2.title}
                   className="w-full h-full object-contain p-4"
                   onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/300?text=No+Image";
+                    e.target.style.display = "none";
+                    e.target.parentNode.innerHTML =
+                      '<div class="text-4xl text-gray-500">📱</div>';
                   }}
                 />
               </div>
@@ -174,16 +208,8 @@ export default function Compare() {
               {renderSpecRow("Prezzo", phone1.price, phone2.price, "€")}
               {renderSpecRow(
                 "Categoria",
-                phone1.category === "flagship"
-                  ? "Top di gamma"
-                  : phone1.category === "mid-range"
-                  ? "Fascia media"
-                  : "Economico",
-                phone2.category === "flagship"
-                  ? "Top di gamma"
-                  : phone2.category === "mid-range"
-                  ? "Fascia media"
-                  : "Economico"
+                getCategoryLabel(phone1.category),
+                getCategoryLabel(phone2.category)
               )}
               {renderSpecRow(
                 "Schermo",
@@ -214,7 +240,7 @@ export default function Compare() {
                     <h4 className="font-bold text-white mb-2">
                       {phone1.title}
                     </h4>
-                    <p className="text-gray-800">
+                    <p className="text-gray-700">
                       {phone1.description || "Nessuna descrizione disponibile."}
                     </p>
                   </div>
@@ -222,7 +248,7 @@ export default function Compare() {
                     <h4 className="font-bold text-white mb-2">
                       {phone2.title}
                     </h4>
-                    <p className="text-gray-800">
+                    <p className="text-gray-700">
                       {phone2.description || "Nessuna descrizione disponibile."}
                     </p>
                   </div>

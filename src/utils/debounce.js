@@ -4,7 +4,7 @@ export function debounce(callback, delay) {
     // Accetta multipli argomenti
     clearTimeout(timer);
     timer = setTimeout(() => {
-      callback(...args); // Passa tutti gli argomenti
+      callback(...args); // Passo tutti gli argomenti
     }, delay);
   };
 }

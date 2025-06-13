@@ -1,4 +1,3 @@
-// hooks/useSmartphoneFilters.js
 import { useState, useMemo } from "react";
 import { debounce } from "../utils/debounce";
 

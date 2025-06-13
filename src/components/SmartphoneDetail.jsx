@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { FiArrowLeft, FiSmartphone } from "react-icons/fi";
 import { Footer } from "../pages/Footer";
 
@@ -8,7 +8,6 @@ export default function SmartphoneDetail() {
   const [phone, setPhone] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPhoneData = async () => {

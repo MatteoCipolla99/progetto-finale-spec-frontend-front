@@ -1,4 +1,3 @@
-// components/SmartphoneImage.jsx
 import { useState } from "react";
 
 export default function SmartphoneImage({ src, alt, className }) {
