@@ -1,5 +1,4 @@
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import SmartphoneImage from "./SmartphoneImage";
 
 export default function FavoritesSidebar({
   showFavorites,
@@ -41,13 +40,6 @@ export default function FavoritesSidebar({
                 className="p-4 border-b border-slate-800 hover:bg-slate-800/50 transition-colors duration-300"
               >
                 <div className="flex items-center">
-                  <div className="w-16 h-16 mr-4 bg-slate-800 rounded-lg flex items-center justify-center">
-                    <SmartphoneImage
-                      src={phone.image}
-                      alt={phone.title}
-                      className="w-full h-full object-contain p-1"
-                    />
-                  </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-white truncate">
                       {phone.title}
