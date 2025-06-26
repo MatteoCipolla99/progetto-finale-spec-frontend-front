@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { getImageForPhone } from "../utils/smartphoneImage";
 
-export default function SmartphoneImage({ src, alt, className }) {
+export default function SmartphoneImage({ phone, alt, className = "" }) {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
+
+  const src = useMemo(() => getImageForPhone(phone), [phone]);
 
   return (
     <div
@@ -26,9 +29,8 @@ export default function SmartphoneImage({ src, alt, className }) {
           className={`${className} ${
             imageLoading ? "opacity-0" : "opacity-100"
           } transition-opacity duration-300`}
-          onError={() => setImageError(true)}
           onLoad={() => setImageLoading(false)}
-          style={{ display: imageLoading ? "none" : "block" }}
+          onError={() => setImageError(true)}
         />
       )}
     </div>

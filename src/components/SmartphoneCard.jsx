@@ -19,34 +19,38 @@ export default function SmartphoneCard({
     <div className="group relative overflow-hidden rounded-xl bg-slate-800 border border-slate-700/50 transition-all duration-300 hover:border-purple-500/30 hover:shadow-lg hover:shadow-purple-500/10">
       {/* Favorite button */}
       <button
-        onClick={() => onToggleFavorite(phone)}
+        onClick={() => onToggleFavorite?.(phone)}
         className="absolute top-4 right-4 z-10 p-2 bg-slate-700/80 backdrop-blur rounded-full shadow-lg text-red-400 hover:text-red-300 transition-colors duration-300"
         aria-label={
           isFavorite ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"
         }
       >
-        {isFavorite ? <FaHeart className="text-red-500" /> : <FaRegHeart />}
+        {isFavorite ? (
+          <FaHeart className="text-red-500" />
+        ) : (
+          <FaRegHeart className="text-gray-400" />
+        )}
       </button>
 
       <Link to={`/smartphones/${phone.id}`} className="block">
         {/* Image container */}
         <div className="h-64 bg-slate-800 flex items-center justify-center p-4">
           <SmartphoneImage
-            src={phone.image}
-            alt={phone.title}
+            phone={phone}
+            alt={`${phone.brand} ${phone.title}`}
             className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105"
           />
         </div>
 
         {/* Product info */}
         <div className="p-5 pt-3">
-          <h2 className="text-xl font-semibold text-white mb-2">
+          <h2 className="text-xl font-semibold text-white mb-2 leading-tight">
             {phone.title}
           </h2>
           <p className="text-slate-300 mb-3">{phone.brand}</p>
           <span
             className={`inline-block px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r ${
-              categoryStyles[phone.category]
+              categoryStyles[phone.category] || categoryStyles["mid-range"]
             } text-white`}
           >
             {phone.category === "flagship"
@@ -61,7 +65,7 @@ export default function SmartphoneCard({
       {/* Compare button */}
       <div className="px-5 pb-5">
         <button
-          onClick={() => onToggleCompare(phone)}
+          onClick={() => onToggleCompare?.(phone)}
           className={`w-full py-3 px-4 rounded-xl font-medium text-sm transition-all duration-300 ${
             isInComparison
               ? "bg-gradient-to-r from-red-500 to-pink-500 shadow-red-500/25"

@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaHeart, FaBalanceScale } from "react-icons/fa";
+import { Toast } from "./Toast";
 
 export default function FloatingButtons({
   favorites,
@@ -8,6 +10,8 @@ export default function FloatingButtons({
 }) {
   const navigate = useNavigate();
 
+  const [toastVisible, setToastVisible] = useState(false);
+
   const handleCompareClick = () => {
     if (comparisonList.length === 2) {
       // Naviga alla pagina di confronto passando i dati tramite state
@@ -15,14 +19,21 @@ export default function FloatingButtons({
         state: { comparisonList },
       });
     } else {
-      alert(
-        `Seleziona esattamente 2 smartphone per il confronto. Attualmente ne hai ${comparisonList.length} selezionati.`
-      );
+      setToastVisible(true);
     }
   };
 
   return (
     <>
+      {/* Toast */}
+      <Toast
+        message={`Seleziona esattamente 2 smartphone per il confronto. Attualmente ne hai ${comparisonList.length}.`}
+        type="warning"
+        isVisible={toastVisible}
+        onClose={() => setToastVisible(false)}
+        duration={3000}
+      />
+
       {/* Favorites floating button */}
       {favorites.length > 0 && (
         <button
