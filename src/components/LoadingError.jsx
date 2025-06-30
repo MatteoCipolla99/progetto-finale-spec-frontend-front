@@ -1,4 +1,3 @@
-// components/LoadingError.jsx
 export function LoadingSpinner() {
   return (
     <div className="flex justify-center items-center h-64">

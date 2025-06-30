@@ -1,10 +1,9 @@
 export function debounce(callback, delay) {
-  let timer;
+  let timer; // Variabile per memorizzare il timeout
   return (...args) => {
-    // Accetta multipli argomenti
-    clearTimeout(timer);
+    clearTimeout(timer); // Cancella il timeout precedente se esiste
     timer = setTimeout(() => {
-      callback(...args); // Passo tutti gli argomenti
+      callback(...args); // Passo tutti gli argomenti eseguendo la funzione originale
     }, delay);
   };
 }

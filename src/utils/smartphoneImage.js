@@ -1,4 +1,3 @@
-// Mappa modello → immagine (la tua originale)
 const smartphoneImagesMap = {
   "iphone 15 pro":
     "https://m.media-amazon.com/images/I/81Wwngkh2OL.__AC_SX300_SY300_QL70_ML2_.jpg",

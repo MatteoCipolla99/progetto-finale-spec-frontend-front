@@ -5,7 +5,6 @@ export default function PageNotFound() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 p-4 text-center">
       <div className="max-w-md mx-auto">
-        {/* Animated 404 */}
         <div className="relative mb-8">
           <div className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-purple-600">
             404
@@ -31,10 +30,6 @@ export default function PageNotFound() {
           <FiArrowLeft className="mr-2" />
           Torna alla Home
         </Link>
-
-        {/* Decorative elements */}
-        <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-600/20 rounded-full filter blur-3xl -z-10"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 bg-blue-600/20 rounded-full filter blur-3xl -z-10"></div>
       </div>
     </div>
   );

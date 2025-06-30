@@ -75,7 +75,7 @@ export default function Home() {
       />
 
       <div className="relative max-w-7xl mx-auto">
-        {/* Header with gradient text */}
+        {/* Header con testo gradiente  */}
         <div className="mb-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
             SmartBool Store
@@ -86,7 +86,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Filters with glassmorphism effect */}
+        {/* Filtri con effetti */}
         <div className="bg-white/5 backdrop-blur-lg rounded-xl border border-white/10 p-6 mb-8 shadow-lg">
           <SearchFilters
             inputValue={inputValue}
@@ -98,7 +98,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Results */}
+        {/* Risultato */}
         {filteredSmartphones.length === 0 ? (
           <EmptyState message="Nessun smartphone trovato con i filtri selezionati." />
         ) : (

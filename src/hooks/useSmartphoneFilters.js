@@ -7,7 +7,7 @@ export function useSmartphoneFilters(smartphones) {
   const [sortOrder, setSortOrder] = useState("asc");
   const [inputValue, setInputValue] = useState("");
 
-  // Debounced search function
+  // Debounced funzione di ricerca
   const debouncedSearch = useMemo(() => debounce(setSearchTerm, 150), []);
 
   const handleSearchChange = (e) => {
@@ -16,7 +16,7 @@ export function useSmartphoneFilters(smartphones) {
     debouncedSearch(value);
   };
 
-  // Filtered and sorted smartphones
+  // Filtra e ordina gli smartphone
   const filteredSmartphones = useMemo(() => {
     let filtered = smartphones
       .filter((phone) =>
