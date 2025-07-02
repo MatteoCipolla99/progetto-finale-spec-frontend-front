@@ -8,7 +8,7 @@ export function useSmartphoneFilters(smartphones) {
   const [inputValue, setInputValue] = useState("");
 
   // Debounced funzione di ricerca
-  const debouncedSearch = useMemo(() => debounce(setSearchTerm, 150), []);
+  const debouncedSearch = useMemo(() => debounce(setSearchTerm, 1000), []);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
